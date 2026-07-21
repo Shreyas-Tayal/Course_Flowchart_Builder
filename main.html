@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Course Prerequisite Flowchart Builder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --panel: #ffffff;
+    --border: #e2ded8;
+    --ink: #2b2621;
+    --muted: #7a736a;
+    --accent: #b5651d;
+    --accent-soft: #f1e4d6;
+    --danger: #a4423a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 24px;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+  }
+  p.sub {
+    color: var(--muted);
+    margin: 0 0 20px 0;
+    font-size: 14px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  input[type=text] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    background: #fffefc;
+    color: var(--ink);
+  }
+  input[type=text]:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-size: 14px;
+  }
+  .add-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  .add-btn:hover { background: #9c5417; }
+  .hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .entry-list {
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13px;
+  }
+  .entry:last-child { border-bottom: none; }
+  .entry-text b { color: var(--accent); }
+  .entry-text .prereqs { color: var(--muted); }
+  .remove-btn {
+    background: none;
+    color: var(--danger);
+    padding: 2px 8px;
+    font-size: 12px;
+    border: 1px solid var(--danger);
+  }
+  .remove-btn:hover { background: var(--danger); color: white; }
+  .empty-msg {
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+  .diagram-panel {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+  .diagram-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .toolbar-btn {
+    padding: 7px 14px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .toolbar-btn:hover { background: #e8d3ba; }
+  #diagramContainer {
+    flex: 1;
+    overflow: auto;
+    background: #fffefc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #diagramContainer svg { max-width: 100%; height: auto; }
+  .placeholder {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  select {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    background: #fffefc;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<h1>Course Prerequisite Flowchart Builder</h1>
+<p class="sub">Add each Year 3 course and the Year 2 course(s) it requires. The flowchart updates automatically.</p>
+
+<div class="layout">
+  <div class="panel">
+    <label for="y3input">Year 3 course</label>
+    <input type="text" id="y3input" placeholder="e.g. Machine Learning">
+
+    <label for="y2input">Year 2 prerequisite(s)</label>
+    <input type="text" id="y2input" placeholder="e.g. Statistics, Linear Algebra">
+    <div class="hint">Separate multiple prerequisites with commas.</div>
+
+    <label for="direction">Arrow direction</label>
+    <select id="direction">
+      <option value="req">Course → requires → Prerequisite</option>
+      <option value="unlock">Prerequisite → unlocks → Course</option>
+    </select>
+
+    <button class="add-btn" onclick="addEntry()">+ Add to flowchart</button>
+
+    <div class="entry-list" id="entryList">
+      <div class="empty-msg">No courses added yet.</div>
+    </div>
+  </div>
+
+  <div class="panel diagram-panel">
+    <div class="diagram-toolbar">
+      <button class="toolbar-btn" onclick="downloadSVG()">Download as SVG</button>
+      <button class="toolbar-btn" onclick="downloadPNG()">Download as PNG</button>
+      <button class="toolbar-btn" onclick="clearAll()">Clear all</button>
+    </div>
+    <div id="diagramContainer">
+      <div class="placeholder">Your flowchart will appear here once you add a course.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+mermaid.initialize({ startOnLoad: false, theme: 'neutral', flowchart: { curve: 'basis' } });
+
+let entries = []; // { y3, y2list: [...], direction }
+let idCounter = 0;
+
+function slug(name) {
+  return 'n' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') + '_' + Math.abs(hashCode(name));
+}
+function hashCode(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = (h << 5) - h + str.charCodeAt(i); h |= 0; }
+  return h;
+}
+
+// stable id map so re-renders keep same node ids for same course names
+let idMap = {};
+function getId(name) {
+  const key = name.trim().toLowerCase();
+  if (!idMap[key]) idMap[key] = 'c' + (idCounter++);
+  return idMap[key];
+}
+
+function addEntry() {
+  const y3 = document.getElementById('y3input').value.trim();
+  const y2raw = document.getElementById('y2input').value.trim();
+  const direction = document.getElementById('direction').value;
+
+  if (!y3 || !y2raw) {
+    alert('Please fill in both the Year 3 course and at least one prerequisite.');
+    return;
+  }
+  const y2list = y2raw.split(',').map(s => s.trim()).filter(Boolean);
+
+  entries.push({ y3, y2list, direction });
+  document.getElementById('y3input').value = '';
+  document.getElementById('y2input').value = '';
+  document.getElementById('y3input').focus();
+
+  renderEntryList();
+  renderDiagram();
+}
+
+function removeEntry(index) {
+  entries.splice(index, 1);
+  renderEntryList();
+  renderDiagram();
+}
+
+function clearAll() {
+  if (entries.length && !confirm('Clear all entries?')) return;
+  entries = [];
+  idMap = {};
+  renderEntryList();
+  renderDiagram();
+}
+
+function renderEntryList() {
+  const list = document.getElementById('entryList');
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="empty-msg">No courses added yet.</div>';
+    return;
+  }
+  list.innerHTML = entries.map((e, i) => `
+    <div class="entry">
+      <div class="entry-text">
+        <b>${escapeHtml(e.y3)}</b><br>
+        <span class="prereqs">requires: ${e.y2list.map(escapeHtml).join(', ')}</span>
+      </div>
+      <button class="remove-btn" onclick="removeEntry(${i})">Remove</button>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function buildMermaidCode() {
+  let lines = ['flowchart LR'];
+  const declared = new Set();
+
+  entries.forEach(e => {
+    const y3id = getId(e.y3);
+    if (!declared.has(y3id)) {
+      lines.push(`  ${y3id}["${e.y3.replace(/"/g,"'")}"]`);
+      declared.add(y3id);
+    }
+    e.y2list.forEach(y2 => {
+      const y2id = getId(y2);
+      if (!declared.has(y2id)) {
+        lines.push(`  ${y2id}["${y2.replace(/"/g,"'")}"]`);
+        declared.add(y2id);
+      }
+      if (e.direction === 'req') {
+        lines.push(`  ${y3id} --> ${y2id}`);
+      } else {
+        lines.push(`  ${y2id} --> ${y3id}`);
+      }
+    });
+  });
+
+  // style year 3 vs year 2 nodes
+  const y3ids = new Set(entries.map(e => getId(e.y3)));
+  const y2ids = new Set();
+  entries.forEach(e => e.y2list.forEach(y2 => y2ids.add(getId(y2))));
+
+  if (y3ids.size) lines.push(`  classDef y3 fill:#f1e4d6,stroke:#b5651d,stroke-width:1.5px,color:#2b2621;`);
+  if (y2ids.size) lines.push(`  classDef y2 fill:#eef2ee,stroke:#5c7a5c,stroke-width:1.5px,color:#2b2621;`);
+  if (y3ids.size) lines.push(`  class ${[...y3ids].join(',')} y3;`);
+  if (y2ids.size) lines.push(`  class ${[...y2ids].join(',')} y2;`);
+
+  return lines.join('\n');
+}
+
+let renderCount = 0;
+async function renderDiagram() {
+  const container = document.getElementById('diagramContainer');
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="placeholder">Your flowchart will appear here once you add a course.</div>';
+    return;
+  }
+  const code = buildMermaidCode();
+  const id = 'mermaidGraph' + (renderCount++);
+  try {
+    const { svg } = await mermaid.render(id, code);
+    container.innerHTML = svg;
+  } catch (err) {
+    container.innerHTML = '<div class="placeholder">Could not render diagram. Try simplifying course names.</div>';
+    console.error(err);
+  }
+}
+
+function downloadSVG() {
+  const svgEl = document.querySelector('#diagramContainer svg');
+  if (!svgEl) { alert('Add at least one course first.'); return; }
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svgEl);
+  if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'course_flowchart.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadPNG() {
+  const svgEl = document.querySelector('#diagramContainer svg');
+  if (!svgEl) { alert('Add at least one course first.'); return; }
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svgEl);
+  if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const bbox = svgEl.getBBox ? svgEl.getBBox() : null;
+  const width = svgEl.viewBox && svgEl.viewBox.baseVal.width ? svgEl.viewBox.baseVal.width : (bbox ? bbox.width : 800);
+  const height = svgEl.viewBox && svgEl.viewBox.baseVal.height ? svgEl.viewBox.baseVal.height : (bbox ? bbox.height : 600);
+
+  const img = new Image();
+  const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = function() {
+    const scale = 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fffefc';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, width, height);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(blob) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'course_flowchart.png';
+      a.click();
+    });
+  };
+  img.onerror = function(e) {
+    console.error('PNG export failed', e);
+    alert('PNG export failed — try SVG download instead.');
+  };
+  img.src = url;
+}
+
+// allow Enter key to submit from either field
+['y3input','y2input'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addEntry();
+  });
+});
+</script>
+
+</body>
+</html>
