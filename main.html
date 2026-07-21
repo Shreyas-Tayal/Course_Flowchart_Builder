@@ -13,6 +13,8 @@
     --muted: #7a736a;
     --accent: #b5651d;
     --accent-soft: #f1e4d6;
+    --accent2: #4f6f52;
+    --accent2-soft: #e6ede6;
     --danger: #a4423a;
   }
   * { box-sizing: border-box; }
@@ -23,159 +25,89 @@
     color: var(--ink);
     padding: 24px;
   }
-  h1 {
-    font-size: 22px;
-    margin: 0 0 4px 0;
-    font-weight: 600;
-  }
-  p.sub {
-    color: var(--muted);
-    margin: 0 0 20px 0;
-    font-size: 14px;
-  }
-  .layout {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-    align-items: start;
-  }
-  @media (max-width: 800px) {
-    .layout { grid-template-columns: 1fr; }
-  }
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-  }
-  label {
-    display: block;
+  h1 { font-size: 22px; margin: 0 0 4px 0; font-weight: 600; }
+  p.sub { color: var(--muted); margin: 0 0 20px 0; font-size: 14px; }
+  .layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .section-title {
     font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 4px;
-    margin-top: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 0 0 4px 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
   }
+  .panel > .section-title:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .section-desc { font-size: 12px; color: var(--muted); margin: 0 0 10px 0; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
   input[type=text] {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 14px;
-    background: #fffefc;
-    color: var(--ink);
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+    font-family: inherit; font-size: 14px; background: #fffefc; color: var(--ink);
   }
   input[type=text]:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
-  button {
-    font-family: inherit;
-    cursor: pointer;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    font-size: 14px;
-  }
-  .add-btn {
-    margin-top: 14px;
-    width: 100%;
-    padding: 10px;
-    background: var(--accent);
-    color: white;
-    font-weight: 600;
-  }
+  button { font-family: inherit; cursor: pointer; border-radius: 6px; border: 1px solid transparent; font-size: 14px; }
+  .add-btn { margin-top: 12px; width: 100%; padding: 9px; background: var(--accent); color: white; font-weight: 600; }
   .add-btn:hover { background: #9c5417; }
-  .hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 6px;
-  }
-  .entry-list {
-    margin-top: 18px;
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
-  }
+  .add-btn.alt { background: var(--accent2); }
+  .add-btn.alt:hover { background: #3d5a40; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .arrow-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+  .arrow-row input { flex: 1; }
+  .arrow-sep { color: var(--muted); font-size: 16px; }
+  .entry-list { margin-top: 14px; }
   .entry {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--border);
-    font-size: 13px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+    padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px;
   }
   .entry:last-child { border-bottom: none; }
   .entry-text b { color: var(--accent); }
   .entry-text .prereqs { color: var(--muted); }
+  .tag {
+    display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    padding: 1px 6px; border-radius: 4px; margin-right: 6px; letter-spacing: 0.03em;
+  }
+  .tag.pair { background: var(--accent-soft); color: var(--accent); }
+  .tag.link { background: var(--accent2-soft); color: var(--accent2); }
+  .tag.node { background: #eee; color: #555; }
   .remove-btn {
-    background: none;
-    color: var(--danger);
-    padding: 2px 8px;
-    font-size: 12px;
-    border: 1px solid var(--danger);
+    background: none; color: var(--danger); padding: 2px 8px; font-size: 12px; border: 1px solid var(--danger); flex-shrink: 0;
   }
   .remove-btn:hover { background: var(--danger); color: white; }
-  .empty-msg {
-    color: var(--muted);
-    font-size: 13px;
-    font-style: italic;
-  }
-  .diagram-panel {
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-  }
-  .diagram-toolbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-  .toolbar-btn {
-    padding: 7px 14px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 13px;
-  }
+  .empty-msg { color: var(--muted); font-size: 13px; font-style: italic; }
+  .diagram-panel { min-height: 400px; display: flex; flex-direction: column; }
+  .diagram-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .toolbar-btn { padding: 7px 14px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 13px; }
   .toolbar-btn:hover { background: #e8d3ba; }
   #diagramContainer {
-    flex: 1;
-    overflow: auto;
-    background: #fffefc;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    min-height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1; overflow: auto; background: #fffefc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; min-height: 340px; display: flex; align-items: center; justify-content: center;
   }
   #diagramContainer svg { max-width: 100%; height: auto; }
-  .placeholder {
-    color: var(--muted);
-    font-size: 14px;
-    text-align: center;
-  }
+  .placeholder { color: var(--muted); font-size: 14px; text-align: center; }
   select {
-    width: 100%;
-    padding: 7px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: inherit;
-    background: #fffefc;
-    color: var(--ink);
+    width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 6px;
+    font-family: inherit; background: #fffefc; color: var(--ink);
   }
 </style>
 </head>
 <body>
 
 <h1>Course Prerequisite Flowchart Builder</h1>
-<p class="sub">Add each Year 3 course and the Year 2 course(s) it requires. The flowchart updates automatically.</p>
+<p class="sub">Build your flowchart from structured course/prerequisite pairs, or add any extra nodes and arrows freehand.</p>
 
 <div class="layout">
   <div class="panel">
-    <label for="y3input">Year 3 course</label>
+
+    <div class="section-title">Course &amp; prerequisites</div>
+    <div class="section-desc">The standard way to add a course and what it requires.</div>
+
+    <label for="y3input">Course</label>
     <input type="text" id="y3input" placeholder="e.g. Machine Learning">
 
-    <label for="y2input">Year 2 prerequisite(s)</label>
+    <label for="y2input">Prerequisite(s)</label>
     <input type="text" id="y2input" placeholder="e.g. Statistics, Linear Algebra">
     <div class="hint">Separate multiple prerequisites with commas.</div>
 
@@ -187,8 +119,26 @@
 
     <button class="add-btn" onclick="addEntry()">+ Add to flowchart</button>
 
+    <div class="section-title">Custom arrow</div>
+    <div class="section-desc">Connect any two nodes yourself, in any direction, with an optional label. Nodes that don't exist yet are created automatically.</div>
+
+    <div class="arrow-row">
+      <input type="text" id="fromInput" placeholder="From node">
+      <span class="arrow-sep">→</span>
+      <input type="text" id="toInput" placeholder="To node">
+    </div>
+    <label for="labelInput">Arrow label (optional)</label>
+    <input type="text" id="labelInput" placeholder="e.g. recommended, co-requisite">
+
+    <button class="add-btn alt" onclick="addLink()">+ Add custom arrow</button>
+
+    <div class="section-title">Standalone node</div>
+    <div class="section-desc">Add a node with no connection yet — useful for placeholders like "elective slot" or notes.</div>
+    <input type="text" id="nodeInput" placeholder="e.g. Free elective">
+    <button class="add-btn alt" onclick="addNode()">+ Add node</button>
+
     <div class="entry-list" id="entryList">
-      <div class="empty-msg">No courses added yet.</div>
+      <div class="empty-msg">No items added yet.</div>
     </div>
   </div>
 
@@ -199,7 +149,7 @@
       <button class="toolbar-btn" onclick="clearAll()">Clear all</button>
     </div>
     <div id="diagramContainer">
-      <div class="placeholder">Your flowchart will appear here once you add a course.</div>
+      <div class="placeholder">Your flowchart will appear here once you add something.</div>
     </div>
   </div>
 </div>
@@ -207,24 +157,22 @@
 <script>
 mermaid.initialize({ startOnLoad: false, theme: 'neutral', flowchart: { curve: 'basis' } });
 
-let entries = []; // { y3, y2list: [...], direction }
+// unified list of items:
+// { type: 'pair', y3, y2list, direction }
+// { type: 'link', from, to, label }
+// { type: 'node', name }
+let items = [];
 let idCounter = 0;
-
-function slug(name) {
-  return 'n' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') + '_' + Math.abs(hashCode(name));
-}
-function hashCode(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) { h = (h << 5) - h + str.charCodeAt(i); h |= 0; }
-  return h;
-}
-
-// stable id map so re-renders keep same node ids for same course names
 let idMap = {};
+
 function getId(name) {
   const key = name.trim().toLowerCase();
   if (!idMap[key]) idMap[key] = 'c' + (idCounter++);
   return idMap[key];
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function addEntry() {
@@ -232,89 +180,132 @@ function addEntry() {
   const y2raw = document.getElementById('y2input').value.trim();
   const direction = document.getElementById('direction').value;
 
-  if (!y3 || !y2raw) {
-    alert('Please fill in both the Year 3 course and at least one prerequisite.');
-    return;
-  }
+  if (!y3 || !y2raw) { alert('Please fill in both the course and at least one prerequisite.'); return; }
   const y2list = y2raw.split(',').map(s => s.trim()).filter(Boolean);
 
-  entries.push({ y3, y2list, direction });
+  items.push({ type: 'pair', y3, y2list, direction });
   document.getElementById('y3input').value = '';
   document.getElementById('y2input').value = '';
   document.getElementById('y3input').focus();
 
-  renderEntryList();
-  renderDiagram();
+  refresh();
 }
 
-function removeEntry(index) {
-  entries.splice(index, 1);
-  renderEntryList();
-  renderDiagram();
+function addLink() {
+  const from = document.getElementById('fromInput').value.trim();
+  const to = document.getElementById('toInput').value.trim();
+  const label = document.getElementById('labelInput').value.trim();
+
+  if (!from || !to) { alert('Please fill in both the "From" and "To" nodes.'); return; }
+
+  items.push({ type: 'link', from, to, label });
+  document.getElementById('fromInput').value = '';
+  document.getElementById('toInput').value = '';
+  document.getElementById('labelInput').value = '';
+  document.getElementById('fromInput').focus();
+
+  refresh();
+}
+
+function addNode() {
+  const name = document.getElementById('nodeInput').value.trim();
+  if (!name) { alert('Please enter a node name.'); return; }
+
+  items.push({ type: 'node', name });
+  document.getElementById('nodeInput').value = '';
+  document.getElementById('nodeInput').focus();
+
+  refresh();
+}
+
+function removeItem(index) {
+  items.splice(index, 1);
+  refresh();
 }
 
 function clearAll() {
-  if (entries.length && !confirm('Clear all entries?')) return;
-  entries = [];
+  if (items.length && !confirm('Clear all entries?')) return;
+  items = [];
   idMap = {};
+  idCounter = 0;
+  refresh();
+}
+
+function refresh() {
   renderEntryList();
   renderDiagram();
 }
 
 function renderEntryList() {
   const list = document.getElementById('entryList');
-  if (entries.length === 0) {
-    list.innerHTML = '<div class="empty-msg">No courses added yet.</div>';
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-msg">No items added yet.</div>';
     return;
   }
-  list.innerHTML = entries.map((e, i) => `
-    <div class="entry">
-      <div class="entry-text">
-        <b>${escapeHtml(e.y3)}</b><br>
-        <span class="prereqs">requires: ${e.y2list.map(escapeHtml).join(', ')}</span>
-      </div>
-      <button class="remove-btn" onclick="removeEntry(${i})">Remove</button>
-    </div>
-  `).join('');
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  list.innerHTML = items.map((it, i) => {
+    let inner = '';
+    if (it.type === 'pair') {
+      inner = `<span class="tag pair">course</span><b>${escapeHtml(it.y3)}</b><br><span class="prereqs">requires: ${it.y2list.map(escapeHtml).join(', ')}</span>`;
+    } else if (it.type === 'link') {
+      inner = `<span class="tag link">arrow</span><b>${escapeHtml(it.from)}</b> → <b>${escapeHtml(it.to)}</b>${it.label ? `<br><span class="prereqs">label: ${escapeHtml(it.label)}</span>` : ''}`;
+    } else if (it.type === 'node') {
+      inner = `<span class="tag node">node</span><b>${escapeHtml(it.name)}</b>`;
+    }
+    return `<div class="entry"><div class="entry-text">${inner}</div><button class="remove-btn" onclick="removeItem(${i})">Remove</button></div>`;
+  }).join('');
 }
 
 function buildMermaidCode() {
   let lines = ['flowchart LR'];
   const declared = new Set();
-
-  entries.forEach(e => {
-    const y3id = getId(e.y3);
-    if (!declared.has(y3id)) {
-      lines.push(`  ${y3id}["${e.y3.replace(/"/g,"'")}"]`);
-      declared.add(y3id);
-    }
-    e.y2list.forEach(y2 => {
-      const y2id = getId(y2);
-      if (!declared.has(y2id)) {
-        lines.push(`  ${y2id}["${y2.replace(/"/g,"'")}"]`);
-        declared.add(y2id);
-      }
-      if (e.direction === 'req') {
-        lines.push(`  ${y3id} --> ${y2id}`);
-      } else {
-        lines.push(`  ${y2id} --> ${y3id}`);
-      }
-    });
-  });
-
-  // style year 3 vs year 2 nodes
-  const y3ids = new Set(entries.map(e => getId(e.y3)));
+  const y3ids = new Set();
   const y2ids = new Set();
-  entries.forEach(e => e.y2list.forEach(y2 => y2ids.add(getId(y2))));
+  const customIds = new Set();
+
+  function declare(name) {
+    const id = getId(name);
+    if (!declared.has(id)) {
+      lines.push(`  ${id}["${name.replace(/"/g,"'")}"]`);
+      declared.add(id);
+    }
+    return id;
+  }
+
+  items.forEach(it => {
+    if (it.type === 'pair') {
+      const y3id = declare(it.y3);
+      y3ids.add(y3id);
+      it.y2list.forEach(y2 => {
+        const y2id = declare(y2);
+        y2ids.add(y2id);
+        if (it.direction === 'req') {
+          lines.push(`  ${y3id} --> ${y2id}`);
+        } else {
+          lines.push(`  ${y2id} --> ${y3id}`);
+        }
+      });
+    } else if (it.type === 'link') {
+      const fromId = declare(it.from);
+      const toId = declare(it.to);
+      customIds.add(fromId);
+      customIds.add(toId);
+      if (it.label) {
+        lines.push(`  ${fromId} -->|${it.label.replace(/"/g,"'")}| ${toId}`);
+      } else {
+        lines.push(`  ${fromId} --> ${toId}`);
+      }
+    } else if (it.type === 'node') {
+      const id = declare(it.name);
+      customIds.add(id);
+    }
+  });
 
   if (y3ids.size) lines.push(`  classDef y3 fill:#f1e4d6,stroke:#b5651d,stroke-width:1.5px,color:#2b2621;`);
   if (y2ids.size) lines.push(`  classDef y2 fill:#eef2ee,stroke:#5c7a5c,stroke-width:1.5px,color:#2b2621;`);
+  if (customIds.size) lines.push(`  classDef custom fill:#f2eee6,stroke:#8a7f6b,stroke-width:1.5px,color:#2b2621;`);
   if (y3ids.size) lines.push(`  class ${[...y3ids].join(',')} y3;`);
   if (y2ids.size) lines.push(`  class ${[...y2ids].join(',')} y2;`);
+  if (customIds.size) lines.push(`  class ${[...customIds].join(',')} custom;`);
 
   return lines.join('\n');
 }
@@ -322,8 +313,8 @@ function buildMermaidCode() {
 let renderCount = 0;
 async function renderDiagram() {
   const container = document.getElementById('diagramContainer');
-  if (entries.length === 0) {
-    container.innerHTML = '<div class="placeholder">Your flowchart will appear here once you add a course.</div>';
+  if (items.length === 0) {
+    container.innerHTML = '<div class="placeholder">Your flowchart will appear here once you add something.</div>';
     return;
   }
   const code = buildMermaidCode();
@@ -332,14 +323,14 @@ async function renderDiagram() {
     const { svg } = await mermaid.render(id, code);
     container.innerHTML = svg;
   } catch (err) {
-    container.innerHTML = '<div class="placeholder">Could not render diagram. Try simplifying course names.</div>';
+    container.innerHTML = '<div class="placeholder">Could not render diagram. Try simplifying node names.</div>';
     console.error(err);
   }
 }
 
 function downloadSVG() {
   const svgEl = document.querySelector('#diagramContainer svg');
-  if (!svgEl) { alert('Add at least one course first.'); return; }
+  if (!svgEl) { alert('Add at least one item first.'); return; }
   const serializer = new XMLSerializer();
   let source = serializer.serializeToString(svgEl);
   if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
@@ -356,7 +347,7 @@ function downloadSVG() {
 
 function downloadPNG() {
   const svgEl = document.querySelector('#diagramContainer svg');
-  if (!svgEl) { alert('Add at least one course first.'); return; }
+  if (!svgEl) { alert('Add at least one item first.'); return; }
   const serializer = new XMLSerializer();
   let source = serializer.serializeToString(svgEl);
   if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
@@ -394,12 +385,14 @@ function downloadPNG() {
   img.src = url;
 }
 
-// allow Enter key to submit from either field
+// Enter key submits from the relevant field group
 ['y3input','y2input'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') addEntry();
-  });
+  document.getElementById(id).addEventListener('keydown', function(e) { if (e.key === 'Enter') addEntry(); });
 });
+['fromInput','toInput','labelInput'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', function(e) { if (e.key === 'Enter') addLink(); });
+});
+document.getElementById('nodeInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') addNode(); });
 </script>
 
 </body>
