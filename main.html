@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interactive Flowchart Builder</title>
 <style>
   :root {
@@ -18,19 +19,20 @@
     --danger-soft: #f3e2e0;
   }
   * { box-sizing: border-box; }
+  html, body { max-width: 100%; overflow-x: hidden; }
   body {
     margin: 0;
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     background: var(--bg);
     color: var(--ink);
-    padding: 24px;
+    padding: clamp(12px, 3vw, 24px);
   }
-  h1 { font-size: 22px; margin: 0 0 4px 0; font-weight: 600; }
+  h1 { font-size: clamp(18px, 4vw, 22px); margin: 0 0 4px 0; font-weight: 600; }
   p.sub { color: var(--muted); margin: 0 0 20px 0; font-size: 14px; }
-  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
-  @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } }
-  .left-col { display: flex; flex-direction: column; gap: 16px; }
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .layout { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 20px; align-items: start; max-width: 100%; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .left-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; min-width: 0; }
   .helper-panel { background: var(--accent2-soft); border-color: #d4ddd4; }
   .section-title {
     font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
@@ -41,7 +43,7 @@
   label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
   input[type=text] {
     width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
-    font-family: inherit; font-size: 14px; background: #fffefc; color: var(--ink);
+    font-family: inherit; font-size: 16px; background: #fffefc; color: var(--ink);
   }
   input[type=text]:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
   button { font-family: inherit; cursor: pointer; border-radius: 6px; border: 1px solid transparent; font-size: 14px; }
@@ -50,34 +52,38 @@
   .add-btn.alt { background: var(--accent2); }
   .add-btn.alt:hover { background: #3d5a40; }
   .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .arrow-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
-  .arrow-row input { flex: 1; }
+  .arrow-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .arrow-row input { flex: 1 1 100px; min-width: 0; }
   .arrow-sep { color: var(--muted); font-size: 16px; }
   select {
     width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 6px;
-    font-family: inherit; background: #fffefc; color: var(--ink);
+    font-family: inherit; background: #fffefc; color: var(--ink); font-size: 14px;
   }
+  .file-btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .file-btn-row button { flex: 1 1 100px; padding: 7px; font-size: 12px; }
+  .file-btn { background: #efe6d3; color: #7a5a26; }
+  .file-btn:hover { background: #e6d8ba; }
 
-  .diagram-panel { min-height: 500px; display: flex; flex-direction: column; }
+  .diagram-panel { min-height: 500px; display: flex; flex-direction: column; min-width: 0; }
   .diagram-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
   .toolbar-btn { padding: 7px 14px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 13px; }
   .toolbar-btn:hover { background: #e8d3ba; }
 
-  .mode-toggle {
-    display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
-  }
-  .mode-btn {
-    padding: 7px 14px; background: var(--panel); color: var(--muted); font-weight: 600; font-size: 13px;
-    border-radius: 0;
-  }
+  .mode-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .mode-btn { padding: 7px 14px; background: var(--panel); color: var(--muted); font-weight: 600; font-size: 13px; border-radius: 0; }
   .mode-btn.active.move { background: var(--accent2); color: white; }
   .mode-btn.active.delete { background: var(--danger); color: white; }
   .mode-hint { font-size: 12px; color: var(--muted); margin-left: 4px; }
 
   #canvasWrap {
-    flex: 1; overflow: auto; background: #fffefc; border: 1px solid var(--border); border-radius: 8px;
-    min-height: 420px; position: relative;
+    flex: 1; overflow-y: auto; overflow-x: hidden; background: #fffefc; border: 1px solid var(--border); border-radius: 8px;
+    min-height: 420px; position: relative; max-width: 100%;
   }
+  @media (max-width: 600px) {
+    #canvasWrap { min-height: 300px; }
+    .diagram-panel { min-height: 380px; }
+  }
+  #canvasWrap svg { display: block; width: 100%; height: auto; }
   #canvasWrap.mode-delete svg .node-hit { cursor: pointer; }
   #canvasWrap.mode-delete svg .edge-hit { cursor: pointer; }
   #canvasWrap.mode-move svg .node-hit { cursor: grab; }
@@ -99,6 +105,8 @@
   .edge-label { font-size: 11px; fill: #6b6355; font-style: italic; }
   #canvasWrap.mode-delete .node-hit:hover .node-rect { stroke: var(--danger); stroke-width: 2.5px; }
   #canvasWrap.mode-delete .edge-hit:hover + .edge-line { stroke: var(--danger); stroke-width: 2.5px; }
+
+  #codePanel textarea { max-width: 100%; }
 </style>
 </head>
 <body>
@@ -157,13 +165,24 @@
       </div>
       <span class="mode-hint" id="modeHint">Drag nodes to rearrange them.</span>
       <span style="flex:1"></span>
-      <span class="mode-hint" id="saveStatus">Loading…</span>
+      <button class="toolbar-btn" id="viewToggleBtn" onclick="toggleCodeView()">{ } Code view</button>
       <button class="toolbar-btn" onclick="downloadSVG()">Download SVG</button>
       <button class="toolbar-btn" onclick="downloadPNG()">Download PNG</button>
-      <button class="toolbar-btn" onclick="clearAll()">Clear all</button>
+      <button class="toolbar-btn" onclick="clearCanvas()">Clear canvas</button>
     </div>
     <div id="canvasWrap" class="mode-move">
       <div class="placeholder" id="placeholderMsg">Your flowchart will appear here once you add something.</div>
+    </div>
+    <div id="codePanel" style="display:none; flex-direction:column; flex:1; min-height:300px;">
+      <div class="section-desc" style="margin-bottom:8px;">
+        One connection per line: <code>From --&gt; To</code>, or add a label with <code>From --&gt; To : label</code>.
+        A line with just a name adds a standalone node. Pasting a full list here replaces the current diagram.
+      </div>
+      <textarea id="codeTextarea" spellcheck="false" style="flex:1; width:100%; min-height:260px; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size:13px; padding:12px; border:1px solid var(--border); border-radius:8px; background:#fffefc; color:var(--ink); resize:vertical;"></textarea>
+      <div class="file-btn-row" style="margin-top:10px;">
+        <button class="add-btn" style="margin-top:0;" onclick="applyCode()">Apply to diagram</button>
+        <button class="file-btn" onclick="copyCode()">Copy</button>
+      </div>
     </div>
   </div>
 </div>
@@ -173,9 +192,9 @@ const NS = 'http://www.w3.org/2000/svg';
 const CANVAS_W = 1400, CANVAS_H = 900;
 const NODE_W = 150, NODE_H = 48;
 
-let nodes = {};      // id -> {id, name, x, y, type}
-let edges = [];       // {id, from, to, label}
-let idMap = {};        // lowercase name -> id
+let nodes = {};
+let edges = [];
+let idMap = {};
 let idCounter = 0;
 let edgeCounter = 0;
 let mode = 'move';
@@ -184,51 +203,144 @@ let dragState = null;
 let svg = null;
 let edgesLayer = null, nodesLayer = null;
 
-const STORAGE_KEY = 'flowchart-state';
+let codeViewActive = false;
 
-function setSaveStatus(text) {
-  const el = document.getElementById('saveStatus');
-  if (el) el.textContent = text;
-}
+function toggleCodeView() {
+  codeViewActive = !codeViewActive;
+  const canvasWrap = document.getElementById('canvasWrap');
+  const codePanel = document.getElementById('codePanel');
+  const btn = document.getElementById('viewToggleBtn');
+  const moveBtn = document.getElementById('moveModeBtn');
+  const deleteBtn = document.getElementById('deleteModeBtn');
+  const modeHint = document.getElementById('modeHint');
 
-async function saveState() {
-  setSaveStatus('Saving…');
-  try {
-    const state = { nodes, edges, idMap, idCounter, edgeCounter };
-    const result = await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
-    setSaveStatus(result ? 'Saved' : 'Save failed');
-  } catch (err) {
-    console.error('Save error:', err);
-    setSaveStatus('Save failed');
+  if (codeViewActive) {
+    document.getElementById('codeTextarea').value = serializeToCode();
+    canvasWrap.style.display = 'none';
+    codePanel.style.display = 'flex';
+    btn.textContent = '🖼 Canvas view';
+    moveBtn.style.display = 'none';
+    deleteBtn.style.display = 'none';
+    modeHint.style.display = 'none';
+  } else {
+    canvasWrap.style.display = 'block';
+    codePanel.style.display = 'none';
+    btn.textContent = '{ } Code view';
+    moveBtn.style.display = '';
+    deleteBtn.style.display = '';
+    modeHint.style.display = '';
   }
 }
 
-async function loadState() {
-  setSaveStatus('Loading…');
-  try {
-    const result = await window.storage.get(STORAGE_KEY, false);
-    if (result && result.value) {
-      const state = JSON.parse(result.value);
-      nodes = state.nodes || {};
-      edges = state.edges || [];
-      idMap = state.idMap || {};
-      idCounter = state.idCounter || 0;
-      edgeCounter = state.edgeCounter || 0;
-      setSaveStatus('Saved');
-    } else {
-      setSaveStatus('');
+function serializeToCode() {
+  const lines = [];
+  const connectedIds = new Set();
+  edges.forEach(edge => {
+    const n1 = nodes[edge.from], n2 = nodes[edge.to];
+    if (!n1 || !n2) return;
+    connectedIds.add(edge.from);
+    connectedIds.add(edge.to);
+    let line = `${n1.name} --> ${n2.name}`;
+    if (edge.label) line += ` : ${edge.label}`;
+    lines.push(line);
+  });
+  Object.values(nodes).forEach(n => {
+    if (!connectedIds.has(n.id)) lines.push(n.name);
+  });
+  return lines.join('\n');
+}
+
+function applyCode() {
+  const text = document.getElementById('codeTextarea').value;
+  const rawLines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('#'));
+
+  const newNodes = {};
+  const newEdges = [];
+  const newIdMap = {};
+  let newIdCounter = 0;
+  let newEdgeCounter = 0;
+
+  function localGetId(name) {
+    const key = name.trim().toLowerCase();
+    if (!newIdMap[key]) newIdMap[key] = 'n' + (newIdCounter++);
+    return newIdMap[key];
+  }
+
+  function localEnsureNode(name) {
+    const id = localGetId(name);
+    if (!newNodes[id]) {
+      // preserve position/type from existing state if this node already existed
+      const oldId = idMap[name.trim().toLowerCase()];
+      const old = oldId ? nodes[oldId] : null;
+      const count = Object.keys(newNodes).length;
+      const cols = 5;
+      const pos = old ? { x: old.x, y: old.y } : { x: 130 + (count % cols) * 220, y: 100 + Math.floor(count / cols) * 140 };
+      newNodes[id] = { id, name: name.trim(), x: pos.x, y: pos.y, type: old ? old.type : 'custom' };
     }
-  } catch (err) {
-    // key not found on first-ever use is expected
-    setSaveStatus('');
+    return id;
   }
+
+  let hadError = false;
+  rawLines.forEach(line => {
+    const arrowIdx = line.indexOf('-->');
+    if (arrowIdx === -1) {
+      if (line.length > 0) localEnsureNode(line);
+      return;
+    }
+    const fromName = line.slice(0, arrowIdx).trim();
+    let rest = line.slice(arrowIdx + 3).trim();
+    if (!fromName || !rest) { hadError = true; return; }
+
+    let toName = rest, label = '';
+    const labelIdx = rest.lastIndexOf(' : ');
+    if (labelIdx !== -1) {
+      toName = rest.slice(0, labelIdx).trim();
+      label = rest.slice(labelIdx + 3).trim();
+    }
+    if (!toName) { hadError = true; return; }
+
+    const fromId = localEnsureNode(fromName);
+    const toId = localEnsureNode(toName);
+    newEdges.push({ id: 'e' + (newEdgeCounter++), from: fromId, to: toId, label });
+  });
+
+  if (hadError) {
+    if (!confirm('Some lines could not be parsed and were skipped. Apply anyway?')) return;
+  }
+
+  nodes = newNodes;
+  edges = newEdges;
+  idMap = newIdMap;
+  idCounter = newIdCounter;
+  edgeCounter = newEdgeCounter;
+
   fullRender();
+  toggleCodeView();
+}
+
+function copyCode() {
+  const textarea = document.getElementById('codeTextarea');
+  textarea.select();
+  textarea.setSelectionRange(0, 999999);
+  try {
+    navigator.clipboard.writeText(textarea.value).then(() => {
+      const btn = event.target;
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = original; }, 1200);
+    }).catch(() => {
+      document.execCommand('copy');
+    });
+  } catch (err) {
+    try { document.execCommand('copy'); } catch (e2) { /* clipboard unavailable, text remains selected for manual copy */ }
+  }
 }
 
 function initSVG() {
   const wrap = document.getElementById('canvasWrap');
   wrap.innerHTML = '';
   svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${CANVAS_W} ${CANVAS_H}`);
   svg.setAttribute('width', CANVAS_W);
   svg.setAttribute('height', CANVAS_H);
   svg.style.display = 'block';
@@ -262,9 +374,7 @@ function initSVG() {
 
 function getId(name) {
   const key = name.trim().toLowerCase();
-  if (!idMap[key]) {
-    idMap[key] = 'n' + (idCounter++);
-  }
+  if (!idMap[key]) idMap[key] = 'n' + (idCounter++);
   return idMap[key];
 }
 
@@ -297,7 +407,6 @@ function addNode() {
   input.value = '';
   input.focus();
   fullRender();
-  saveState();
 }
 
 function addLink() {
@@ -314,7 +423,6 @@ function addLink() {
   fromInput.value = ''; toInput.value = ''; labelInput.value = '';
   fromInput.focus();
   fullRender();
-  saveState();
 }
 
 function addEntry() {
@@ -339,7 +447,6 @@ function addEntry() {
   y3input.value = ''; y2input.value = '';
   y3input.focus();
   fullRender();
-  saveState();
 }
 
 function deleteNode(id) {
@@ -348,20 +455,17 @@ function deleteNode(id) {
   const key = Object.keys(idMap).find(k => idMap[k] === id);
   if (key) delete idMap[key];
   fullRender();
-  saveState();
 }
 
 function deleteEdge(id) {
   edges = edges.filter(e => e.id !== id);
   fullRender();
-  saveState();
 }
 
-function clearAll() {
-  if (Object.keys(nodes).length && !confirm('Clear all nodes and arrows?')) return;
+function clearCanvas() {
+  if (Object.keys(nodes).length && !confirm('Clear everything on this flowchart?')) return;
   nodes = {}; edges = []; idMap = {}; idCounter = 0; edgeCounter = 0;
   fullRender();
-  saveState();
 }
 
 function setMode(m) {
@@ -405,7 +509,6 @@ function updateEdgePath(edgeGroup, edge) {
     labelText.setAttribute('x', mx);
     labelText.setAttribute('y', my);
     labelText.textContent = edge.label;
-    // approximate width for bg rect
     const w = edge.label.length * 6 + 8;
     labelBg.setAttribute('x', mx - w / 2);
     labelBg.setAttribute('y', my - 12);
@@ -499,7 +602,6 @@ function fullRender() {
 }
 
 function wrapText(textEl, str, maxWidth) {
-  // simple char-based wrap for two lines max
   const approxCharsPerLine = Math.floor(maxWidth / 6.5);
   if (str.length <= approxCharsPerLine) {
     textEl.textContent = str;
@@ -531,10 +633,7 @@ function getSVGCoords(evt) {
   const rect = svg.getBoundingClientRect();
   const scaleX = CANVAS_W / rect.width;
   const scaleY = CANVAS_H / rect.height;
-  return {
-    x: (evt.clientX - rect.left) * scaleX,
-    y: (evt.clientY - rect.top) * scaleY
-  };
+  return { x: (evt.clientX - rect.left) * scaleX, y: (evt.clientY - rect.top) * scaleY };
 }
 
 function onNodePointerDown(evt, nodeId) {
@@ -564,7 +663,6 @@ function onNodePointerDown(evt, nodeId) {
   function onUp() {
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
-    if (dragState && dragState.moved) saveState();
     setTimeout(() => { dragState = null; }, 0);
   }
   document.addEventListener('pointermove', onMove);
@@ -624,7 +722,7 @@ function downloadPNG() {
 document.getElementById('nodeInput').addEventListener('keydown', e => { if (e.key === 'Enter') addNode(); });
 
 initSVG();
-loadState();
+fullRender();
 </script>
 
 </body>
