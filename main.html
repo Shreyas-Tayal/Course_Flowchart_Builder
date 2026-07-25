@@ -70,9 +70,10 @@
   .toolbar-btn:hover { background: #e8d3ba; }
 
   .mode-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .mode-btn { padding: 7px 14px; background: var(--panel); color: var(--muted); font-weight: 600; font-size: 13px; border-radius: 0; }
+  .mode-btn { flex: 1; padding: 7px 14px; background: var(--panel); color: var(--muted); font-weight: 600; font-size: 13px; border-radius: 0; white-space: nowrap; }
   .mode-btn.active.move { background: var(--accent2); color: white; }
   .mode-btn.active.delete { background: var(--danger); color: white; }
+  .mode-btn.active.dir { background: var(--accent); color: white; }
   .mode-hint { font-size: 12px; color: var(--muted); margin-left: 4px; }
 
   #canvasWrap {
@@ -139,18 +140,18 @@
       <div class="section-title">Quick add: Year 3 course</div>
       <div class="section-desc">Shortcut that generates the course node, its prerequisite node(s), and the arrows between them in one go.</div>
 
+      <label>Arrow direction <span style="font-weight:400; text-transform:none; letter-spacing:normal;">(applies to every quick-add arrow, past and future)</span></label>
+      <div class="mode-toggle" id="dirToggle" style="width:100%; cursor:pointer;" onclick="toggleQuickAddDirection()">
+        <button class="mode-btn dir active" id="dirReqBtn" style="flex:1;">Course → Prereq</button>
+        <button class="mode-btn dir" id="dirUnlockBtn" style="flex:1;">Prereq → Course</button>
+      </div>
+
       <label for="y3input">Course</label>
       <input type="text" id="y3input" placeholder="e.g. Machine Learning">
 
       <label for="y2input">Prerequisite(s)</label>
       <input type="text" id="y2input" placeholder="e.g. Statistics, Linear Algebra">
       <div class="hint">Separate multiple prerequisites with commas.</div>
-
-      <label for="direction">Arrow direction</label>
-      <select id="direction">
-        <option value="req">Course → requires → Prerequisite</option>
-        <option value="unlock">Prerequisite → unlocks → Course</option>
-      </select>
 
       <button class="add-btn alt" onclick="addEntry()">+ Add course to flowchart</button>
     </div>
@@ -159,9 +160,9 @@
 
   <div class="panel diagram-panel">
     <div class="diagram-toolbar">
-      <div class="mode-toggle">
-        <button class="mode-btn move active" id="moveModeBtn" onclick="setMode('move')">✥ Move</button>
-        <button class="mode-btn delete" id="deleteModeBtn" onclick="setMode('delete')">🗑 Delete</button>
+      <div class="mode-toggle" id="modeToggle" style="cursor:pointer;" onclick="toggleMode()">
+        <button class="mode-btn move active" id="moveModeBtn">✥ Move</button>
+        <button class="mode-btn delete" id="deleteModeBtn">🗑 Delete</button>
       </div>
       <span class="mode-hint" id="modeHint">Drag nodes to rearrange them.</span>
       <span style="flex:1"></span>
@@ -179,6 +180,7 @@
     <div id="codePanel" style="display:none; flex-direction:column; flex:1; min-height:300px;">
       <div class="section-desc" style="margin-bottom:8px;">
         One connection per line: <code>From --&gt; To</code>, or add a label with <code>From --&gt; To : label</code>.
+        For quick-add course/prerequisite pairs, use <code>course: Name ; prerequisite: Name1, Name2</code> instead — direction always follows the toggle above, so it's never written out.
         A line with just a name adds a standalone node. Pasting a full list here replaces the current diagram.
       </div>
       <textarea id="codeTextarea" spellcheck="false" style="flex:1; width:100%; min-height:260px; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size:13px; padding:12px; border:1px solid var(--border); border-radius:8px; background:#fffefc; color:var(--ink); resize:vertical;"></textarea>
@@ -202,6 +204,7 @@ let idCounter = 0;
 let edgeCounter = 0;
 let mode = 'move';
 let dragState = null;
+let quickAddDirection = 'req'; // 'req' = Course -> Prereq, 'unlock' = Prereq -> Course
 
 let svg = null;
 let edgesLayer = null, nodesLayer = null;
@@ -213,6 +216,7 @@ function toggleCodeView() {
   const canvasWrap = document.getElementById('canvasWrap');
   const codePanel = document.getElementById('codePanel');
   const btn = document.getElementById('viewToggleBtn');
+  const modeToggle = document.getElementById('modeToggle');
   const moveBtn = document.getElementById('moveModeBtn');
   const deleteBtn = document.getElementById('deleteModeBtn');
   const modeHint = document.getElementById('modeHint');
@@ -222,23 +226,55 @@ function toggleCodeView() {
     canvasWrap.style.display = 'none';
     codePanel.style.display = 'flex';
     btn.textContent = '🖼 Canvas view';
-    moveBtn.style.display = 'none';
-    deleteBtn.style.display = 'none';
-    modeHint.style.display = 'none';
+    moveBtn.disabled = true;
+    deleteBtn.disabled = true;
+    modeToggle.style.visibility = 'hidden';
+    modeHint.style.visibility = 'hidden';
   } else {
     canvasWrap.style.display = 'block';
     codePanel.style.display = 'none';
     btn.textContent = '{ } Code view';
-    moveBtn.style.display = '';
-    deleteBtn.style.display = '';
-    modeHint.style.display = '';
+    moveBtn.disabled = false;
+    deleteBtn.disabled = false;
+    modeToggle.style.visibility = '';
+    modeHint.style.visibility = '';
   }
 }
 
 function serializeToCode() {
   const lines = [];
   const connectedIds = new Set();
+  const courseGroups = new Map(); // courseId -> [prereqName, ...]
+  const courseOrder = [];
+  const manualEdges = [];
+
   edges.forEach(edge => {
+    const n1 = nodes[edge.from], n2 = nodes[edge.to];
+    if (!n1 || !n2) return;
+    if (edge.quickAdd) {
+      let courseNode, prereqNode;
+      if (n1.type === 'course') { courseNode = n1; prereqNode = n2; }
+      else if (n2.type === 'course') { courseNode = n2; prereqNode = n1; }
+      else { manualEdges.push(edge); return; } // roles unclear, fall back to a plain arrow
+      connectedIds.add(courseNode.id);
+      connectedIds.add(prereqNode.id);
+      if (!courseGroups.has(courseNode.id)) {
+        courseGroups.set(courseNode.id, []);
+        courseOrder.push(courseNode.id);
+      }
+      courseGroups.get(courseNode.id).push(prereqNode.name);
+    } else {
+      manualEdges.push(edge);
+    }
+  });
+
+  courseOrder.forEach(courseId => {
+    const courseName = nodes[courseId].name;
+    const prereqs = courseGroups.get(courseId).join(', ');
+    lines.push(`course: ${courseName} ; prerequisite: ${prereqs}`);
+  });
+
+  manualEdges.forEach(edge => {
     const n1 = nodes[edge.from], n2 = nodes[edge.to];
     if (!n1 || !n2) return;
     connectedIds.add(edge.from);
@@ -247,6 +283,7 @@ function serializeToCode() {
     if (edge.label) line += ` : ${edge.label}`;
     lines.push(line);
   });
+
   Object.values(nodes).forEach(n => {
     if (!connectedIds.has(n.id)) lines.push(n.name);
   });
@@ -269,7 +306,7 @@ function applyCode() {
     return newIdMap[key];
   }
 
-  function localEnsureNode(name) {
+  function localEnsureNode(name, type) {
     const id = localGetId(name);
     if (!newNodes[id]) {
       // preserve position/type from existing state if this node already existed
@@ -278,13 +315,34 @@ function applyCode() {
       const count = Object.keys(newNodes).length;
       const cols = 5;
       const pos = old ? { x: old.x, y: old.y } : { x: 130 + (count % cols) * 220, y: 100 + Math.floor(count / cols) * 140 };
-      newNodes[id] = { id, name: name.trim(), x: pos.x, y: pos.y, type: old ? old.type : 'custom' };
+      newNodes[id] = { id, name: name.trim(), x: pos.x, y: pos.y, type: type || (old ? old.type : 'custom') };
+    } else if (type === 'course') {
+      newNodes[id].type = 'course';
+    } else if (type === 'prereq' && newNodes[id].type !== 'course') {
+      newNodes[id].type = 'prereq';
     }
     return id;
   }
 
   let hadError = false;
   rawLines.forEach(line => {
+    const courseMatch = line.match(/^course\s*:\s*(.+?)\s*;\s*prerequisite\s*:\s*(.+)$/i);
+    if (courseMatch) {
+      const courseName = courseMatch[1].trim();
+      const prereqNames = courseMatch[2].split(',').map(s => s.trim()).filter(Boolean);
+      if (!courseName || prereqNames.length === 0) { hadError = true; return; }
+      const courseId = localEnsureNode(courseName, 'course');
+      prereqNames.forEach(pName => {
+        const prereqId = localEnsureNode(pName, 'prereq');
+        if (quickAddDirection === 'req') {
+          newEdges.push({ id: 'e' + (newEdgeCounter++), from: courseId, to: prereqId, label: '', quickAdd: true });
+        } else {
+          newEdges.push({ id: 'e' + (newEdgeCounter++), from: prereqId, to: courseId, label: '', quickAdd: true });
+        }
+      });
+      return;
+    }
+
     const arrowIdx = line.indexOf('-->');
     if (arrowIdx === -1) {
       if (line.length > 0) localEnsureNode(line);
@@ -428,10 +486,30 @@ function addLink() {
   fullRender();
 }
 
+function toggleQuickAddDirection() {
+  setQuickAddDirection(quickAddDirection === 'req' ? 'unlock' : 'req');
+}
+
+function setQuickAddDirection(dir) {
+  if (dir !== 'req' && dir !== 'unlock') return;
+  if (dir !== quickAddDirection) {
+    edges.forEach(e => {
+      if (e.quickAdd) {
+        const tmp = e.from;
+        e.from = e.to;
+        e.to = tmp;
+      }
+    });
+    fullRender();
+  }
+  quickAddDirection = dir;
+  document.getElementById('dirReqBtn').classList.toggle('active', dir === 'req');
+  document.getElementById('dirUnlockBtn').classList.toggle('active', dir === 'unlock');
+}
+
 function addEntry() {
   const y3input = document.getElementById('y3input');
   const y2input = document.getElementById('y2input');
-  const direction = document.getElementById('direction').value;
   const y3 = y3input.value.trim();
   const y2raw = y2input.value.trim();
   if (!y3 || !y2raw) { alert('Please fill in both the course and at least one prerequisite.'); return; }
@@ -440,10 +518,10 @@ function addEntry() {
   const y3id = ensureNode(y3, 'course');
   y2list.forEach(y2 => {
     const y2id = ensureNode(y2, 'prereq');
-    if (direction === 'req') {
-      edges.push({ id: 'e' + (edgeCounter++), from: y3id, to: y2id, label: '' });
+    if (quickAddDirection === 'req') {
+      edges.push({ id: 'e' + (edgeCounter++), from: y3id, to: y2id, label: '', quickAdd: true });
     } else {
-      edges.push({ id: 'e' + (edgeCounter++), from: y2id, to: y3id, label: '' });
+      edges.push({ id: 'e' + (edgeCounter++), from: y2id, to: y3id, label: '', quickAdd: true });
     }
   });
 
@@ -469,6 +547,10 @@ function clearCanvas() {
   if (Object.keys(nodes).length && !confirm('Clear everything on this flowchart?')) return;
   nodes = {}; edges = []; idMap = {}; idCounter = 0; edgeCounter = 0;
   fullRender();
+}
+
+function toggleMode() {
+  setMode(mode === 'move' ? 'delete' : 'move');
 }
 
 function setMode(m) {
@@ -674,7 +756,7 @@ function onNodePointerDown(evt, nodeId) {
 
 function saveToFile() {
   if (Object.keys(nodes).length === 0) { alert('Add at least one node before saving.'); return; }
-  const data = { version: 1, nodes, edges, idMap, idCounter, edgeCounter };
+  const data = { version: 1, nodes, edges, idMap, idCounter, edgeCounter, quickAddDirection };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -705,6 +787,9 @@ function loadFromFile(event) {
       idMap = data.idMap || {};
       idCounter = data.idCounter || 0;
       edgeCounter = data.edgeCounter || 0;
+      quickAddDirection = data.quickAddDirection === 'unlock' ? 'unlock' : 'req';
+      document.getElementById('dirReqBtn').classList.toggle('active', quickAddDirection === 'req');
+      document.getElementById('dirUnlockBtn').classList.toggle('active', quickAddDirection === 'unlock');
       fullRender();
     } catch (err) {
       alert('Could not load this file — it doesn\'t look like a valid flowchart save.');
