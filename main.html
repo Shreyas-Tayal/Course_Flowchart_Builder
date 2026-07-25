@@ -166,6 +166,9 @@
       <span class="mode-hint" id="modeHint">Drag nodes to rearrange them.</span>
       <span style="flex:1"></span>
       <button class="toolbar-btn" id="viewToggleBtn" onclick="toggleCodeView()">{ } Code view</button>
+      <button class="toolbar-btn" onclick="saveToFile()">💾 Save</button>
+      <button class="toolbar-btn" onclick="triggerLoad()">📂 Load</button>
+      <input type="file" id="loadFileInput" accept="application/json,.json" style="display:none" onchange="loadFromFile(event)">
       <button class="toolbar-btn" onclick="downloadSVG()">Download SVG</button>
       <button class="toolbar-btn" onclick="downloadPNG()">Download PNG</button>
       <button class="toolbar-btn" onclick="clearCanvas()">Clear canvas</button>
@@ -667,6 +670,53 @@ function onNodePointerDown(evt, nodeId) {
   }
   document.addEventListener('pointermove', onMove);
   document.addEventListener('pointerup', onUp);
+}
+
+function saveToFile() {
+  if (Object.keys(nodes).length === 0) { alert('Add at least one node before saving.'); return; }
+  const data = { version: 1, nodes, edges, idMap, idCounter, edgeCounter };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'flowchart.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function triggerLoad() {
+  document.getElementById('loadFileInput').click();
+}
+
+function loadFromFile(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== 'object' || !data.nodes || !data.edges) {
+        throw new Error('Missing nodes/edges');
+      }
+      if (Object.keys(nodes).length > 0 && !confirm('Loading will replace the current diagram. Continue?')) {
+        event.target.value = '';
+        return;
+      }
+      nodes = data.nodes || {};
+      edges = data.edges || [];
+      idMap = data.idMap || {};
+      idCounter = data.idCounter || 0;
+      edgeCounter = data.edgeCounter || 0;
+      fullRender();
+    } catch (err) {
+      alert('Could not load this file — it doesn\'t look like a valid flowchart save.');
+    } finally {
+      event.target.value = '';
+    }
+  };
+  reader.onerror = function () {
+    alert('Could not read this file.');
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function downloadSVG() {
