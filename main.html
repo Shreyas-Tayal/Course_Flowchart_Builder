@@ -754,10 +754,29 @@ function onNodePointerDown(evt, nodeId) {
   document.addEventListener('pointerup', onUp);
 }
 
-function saveToFile() {
+async function saveToFile() {
   if (Object.keys(nodes).length === 0) { alert('Add at least one node before saving.'); return; }
   const data = { version: 1, nodes, edges, idMap, idCounter, edgeCounter, quickAddDirection };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const json = JSON.stringify(data, null, 2);
+
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: 'flowchart.json',
+        types: [{ description: 'Flowchart JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return; // user cancelled the dialog
+      console.error('Save picker failed, falling back to direct download:', err);
+      // fall through to the plain download below
+    }
+  }
+
+  const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'flowchart.json'; a.click();
