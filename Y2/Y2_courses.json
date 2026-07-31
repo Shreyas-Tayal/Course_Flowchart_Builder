@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "nodes": {
+    "n0": {
+      "id": "n0",
+      "name": "Logic and Modelling",
+      "x": 130,
+      "y": 100,
+      "type": "course"
+    },
+    "n1": {
+      "id": "n1",
+      "name": "Mathematical Foundations & Analysis",
+      "x": 350,
+      "y": 100,
+      "type": "prereq"
+    },
+    "n2": {
+      "id": "n2",
+      "name": "Database Systems",
+      "x": 887.1962747363998,
+      "y": 114.83299180149484,
+      "type": "custom"
+    },
+    "n3": {
+      "id": "n3",
+      "name": "Introduction to AI",
+      "x": 321.05124028212873,
+      "y": 211.81808685296835,
+      "type": "course"
+    },
+    "n4": {
+      "id": "n4",
+      "name": "Machine Learning",
+      "x": 586.6911513647998,
+      "y": 94.29497904671703,
+      "type": "course"
+    },
+    "n5": {
+      "id": "n5",
+      "name": "Knowledge Based AI",
+      "x": 130,
+      "y": 240,
+      "type": "course"
+    },
+    "n6": {
+      "id": "n6",
+      "name": "System Architecture",
+      "x": 667.1964836586949,
+      "y": 211.47499969531992,
+      "type": "custom"
+    },
+    "n7": {
+      "id": "n7",
+      "name": "Processor Microarchitecture",
+      "x": 912.2982885085574,
+      "y": 230.8719769209207,
+      "type": "custom"
+    },
+    "n8": {
+      "id": "n8",
+      "name": "Microcontrollers",
+      "x": 1093.5045521183529,
+      "y": 119.05389006795237,
+      "type": "custom"
+    },
+    "n9": {
+      "id": "n9",
+      "name": "Introduction to Visual Computing",
+      "x": 1145.7783907491596,
+      "y": 225.16700819850513,
+      "type": "custom"
+    },
+    "n10": {
+      "id": "n10",
+      "name": "Distributed Systems",
+      "x": 130,
+      "y": 380,
+      "type": "custom"
+    },
+    "n12": {
+      "id": "n12",
+      "name": "Exploring Enterprise",
+      "x": 350,
+      "y": 380,
+      "type": "custom"
+    },
+    "n13": {
+      "id": "n13",
+      "name": "Entrepreneurial Skills",
+      "x": 570,
+      "y": 380,
+      "type": "custom"
+    }
+  },
+  "edges": [
+    {
+      "id": "e0",
+      "from": "n1",
+      "to": "n0",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e1",
+      "from": "n1",
+      "to": "n3",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e2",
+      "from": "n1",
+      "to": "n4",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e3",
+      "from": "n3",
+      "to": "n5",
+      "label": "",
+      "quickAdd": true
+    }
+  ],
+  "idMap": {
+    "logic and modelling": "n0",
+    "mathematical foundations & analysis": "n1",
+    "database systems": "n2",
+    "introduction to ai": "n3",
+    "machine learning": "n4",
+    "knowledge based ai": "n5",
+    "system architecture": "n6",
+    "processor microarchitecture": "n7",
+    "microcontrollers": "n8",
+    "introduction to visual computing": "n9",
+    "distributed systems": "n10",
+    "exploring enterprise": "n12",
+    "entrepreneurial skills": "n13"
+  },
+  "idCounter": 14,
+  "edgeCounter": 4,
+  "quickAddDirection": "unlock"
+}

@@ -823,10 +823,41 @@ function loadFromFile(event) {
   reader.readAsText(file);
 }
 
-function downloadSVG() {
-  if (!svg || Object.keys(nodes).length === 0) { alert('Add at least one node first.'); return; }
+function getExportStyleBlock() {
+  return `
+    .node-rect { stroke-width: 1.5px; }
+    .node-rect.course { fill: #f1e4d6; stroke: #b5651d; }
+    .node-rect.prereq { fill: #eef2ee; stroke: #5c7a5c; }
+    .node-rect.custom { fill: #f2eee6; stroke: #8a7f6b; }
+    .node-label { font-family: Georgia, 'Times New Roman', serif; font-size: 13px; fill: #2b2621; }
+    .edge-line { stroke: #8a8378; stroke-width: 1.6px; fill: none; }
+    .edge-hit { stroke: transparent; stroke-width: 14px; fill: none; }
+    .edge-label-bg { fill: #fffefc; opacity: 0.9; }
+    .edge-label { font-size: 11px; fill: #6b6355; font-style: italic; font-family: Georgia, 'Times New Roman', serif; }
+  `;
+}
+
+function prepareExportSVG() {
   const clone = svg.cloneNode(true);
   clone.setAttribute('xmlns', NS);
+  const styleEl = document.createElementNS(NS, 'style');
+  styleEl.textContent = getExportStyleBlock();
+  const defs = clone.querySelector('defs');
+  if (defs) defs.insertBefore(styleEl, defs.firstChild);
+  else clone.insertBefore(styleEl, clone.firstChild);
+
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('x', 0); bg.setAttribute('y', 0);
+  bg.setAttribute('width', CANVAS_W); bg.setAttribute('height', CANVAS_H);
+  bg.setAttribute('fill', '#fffefc');
+  clone.insertBefore(bg, clone.firstChild.nextSibling);
+
+  return clone;
+}
+
+function downloadSVG() {
+  if (!svg || Object.keys(nodes).length === 0) { alert('Add at least one node first.'); return; }
+  const clone = prepareExportSVG();
   const serializer = new XMLSerializer();
   const source = serializer.serializeToString(clone);
   const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
@@ -838,8 +869,7 @@ function downloadSVG() {
 
 function downloadPNG() {
   if (!svg || Object.keys(nodes).length === 0) { alert('Add at least one node first.'); return; }
-  const clone = svg.cloneNode(true);
-  clone.setAttribute('xmlns', NS);
+  const clone = prepareExportSVG();
   const serializer = new XMLSerializer();
   const source = serializer.serializeToString(clone);
   const img = new Image();

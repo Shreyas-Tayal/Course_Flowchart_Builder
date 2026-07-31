@@ -1,0 +1,411 @@
+{
+  "version": 1,
+  "nodes": {
+    "n0": {
+      "id": "n0",
+      "name": "Giving Meaning to Programs",
+      "x": 458.60646142936287,
+      "y": 163.89597874551902,
+      "type": "course"
+    },
+    "n1": {
+      "id": "n1",
+      "name": "Foundations of Pure Mathematics B",
+      "x": 551.9558857589013,
+      "y": 25.834936530790966,
+      "type": "prereq"
+    },
+    "n2": {
+      "id": "n2",
+      "name": "Mathematical Foundations & Analysis",
+      "x": 515.2322738386309,
+      "y": 270.0090968760718,
+      "type": "prereq"
+    },
+    "n3": {
+      "id": "n3",
+      "name": "Implementing System-on-Chip Designs",
+      "x": 339.30713159239406,
+      "y": 691.0384366953181,
+      "type": "course"
+    },
+    "n4": {
+      "id": "n4",
+      "name": "Processor Microarchitecture",
+      "x": 151.97211603663663,
+      "y": 613.4503188694455,
+      "type": "prereq"
+    },
+    "n5": {
+      "id": "n5",
+      "name": "The Internet of Things: Architectures and Applications",
+      "x": 102.3839153112584,
+      "y": 284.4990015199182,
+      "type": "course"
+    },
+    "n6": {
+      "id": "n6",
+      "name": "Distributed Systems",
+      "x": 337.4490975750688,
+      "y": 368.93309748194997,
+      "type": "prereq"
+    },
+    "n7": {
+      "id": "n7",
+      "name": "AI and Games",
+      "x": 631.613796392688,
+      "y": 120.19489948169571,
+      "type": "course"
+    },
+    "n8": {
+      "id": "n8",
+      "name": "Computational Game Theory",
+      "x": 986.886854847952,
+      "y": 126.69786880650727,
+      "type": "course"
+    },
+    "n9": {
+      "id": "n9",
+      "name": "Mathematical Topics in Machine Learning",
+      "x": 921.2142742875153,
+      "y": 348.3951369580395,
+      "type": "course"
+    },
+    "n10": {
+      "id": "n10",
+      "name": "Machine Learning",
+      "x": 1029.3969726562502,
+      "y": 222.88498937101843,
+      "type": "course"
+    },
+    "n11": {
+      "id": "n11",
+      "name": "Natural Language Processing",
+      "x": 1274.2053789731049,
+      "y": 293.2839113259154,
+      "type": "course"
+    },
+    "n12": {
+      "id": "n12",
+      "name": "Natural Language Understanding",
+      "x": 1319.6333562948885,
+      "y": 397.1150106289815,
+      "type": "prereq"
+    },
+    "n13": {
+      "id": "n13",
+      "name": "Chip Multiprocessors",
+      "x": 901.8175105535605,
+      "y": 809.016301253715,
+      "type": "course"
+    },
+    "n14": {
+      "id": "n14",
+      "name": "System Architecture",
+      "x": 1195.9822093711796,
+      "y": 797.6063115780163,
+      "type": "prereq"
+    },
+    "n15": {
+      "id": "n15",
+      "name": "Algorithms and Complexity",
+      "x": 210.77833851858574,
+      "y": 164.0077528017508,
+      "type": "course"
+    },
+    "n16": {
+      "id": "n16",
+      "name": "Foundations of Pure Mathematics A",
+      "x": 240.46454767726163,
+      "y": 32.79268872318166,
+      "type": "prereq"
+    },
+    "n17": {
+      "id": "n17",
+      "name": "Graphics & Virtual Environments",
+      "x": 1011.5647921760392,
+      "y": 635.2410367478973,
+      "type": "course"
+    },
+    "n18": {
+      "id": "n18",
+      "name": "Introduction to Visual Computing",
+      "x": 1110.6194665437806,
+      "y": 488.0520498003911,
+      "type": "prereq"
+    },
+    "n19": {
+      "id": "n19",
+      "name": "Computer Vision",
+      "x": 1276.9926650366745,
+      "y": 660.3431393885157,
+      "type": "course"
+    },
+    "n20": {
+      "id": "n20",
+      "name": "Advanced Distributed Systems",
+      "x": 94.62914203373323,
+      "y": 470.593795321159,
+      "type": "course"
+    },
+    "n21": {
+      "id": "n21",
+      "name": "Database Systems",
+      "x": 347.7179417691779,
+      "y": 540.194873366262,
+      "type": "prereq"
+    },
+    "n22": {
+      "id": "n22",
+      "name": "Logic and Modelling",
+      "x": 494.6943765281173,
+      "y": 439.78688065072697,
+      "type": "course"
+    },
+    "n23": {
+      "id": "n23",
+      "name": "Introduction to AI",
+      "x": 698.7204912181006,
+      "y": 461.46582447294696,
+      "type": "course"
+    },
+    "n25": {
+      "id": "n25",
+      "name": "Microcontrollers",
+      "x": 130,
+      "y": 800,
+      "type": "custom"
+    },
+    "n26": {
+      "id": "n26",
+      "name": "Exploring Enterprise",
+      "x": 350,
+      "y": 800,
+      "type": "custom"
+    },
+    "n27": {
+      "id": "n27",
+      "name": "Entrepreneurial Skills",
+      "x": 570,
+      "y": 800,
+      "type": "custom"
+    },
+    "n28": {
+      "id": "n28",
+      "name": "Knowledge Based AI",
+      "x": 665.843520782396,
+      "y": 590.0558870281159,
+      "type": "course"
+    }
+  },
+  "edges": [
+    {
+      "id": "e0",
+      "from": "n1",
+      "to": "n0",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e1",
+      "from": "n2",
+      "to": "n0",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e2",
+      "from": "n4",
+      "to": "n3",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e3",
+      "from": "n6",
+      "to": "n5",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e4",
+      "from": "n2",
+      "to": "n7",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e5",
+      "from": "n1",
+      "to": "n7",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e6",
+      "from": "n8",
+      "to": "n7",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e7",
+      "from": "n10",
+      "to": "n9",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e8",
+      "from": "n10",
+      "to": "n8",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e9",
+      "from": "n2",
+      "to": "n8",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e10",
+      "from": "n1",
+      "to": "n8",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e11",
+      "from": "n10",
+      "to": "n11",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e12",
+      "from": "n12",
+      "to": "n11",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e13",
+      "from": "n14",
+      "to": "n13",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e14",
+      "from": "n2",
+      "to": "n15",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e15",
+      "from": "n1",
+      "to": "n15",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e16",
+      "from": "n16",
+      "to": "n15",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e17",
+      "from": "n18",
+      "to": "n17",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e18",
+      "from": "n18",
+      "to": "n19",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e19",
+      "from": "n21",
+      "to": "n20",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e20",
+      "from": "n6",
+      "to": "n20",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e21",
+      "from": "n2",
+      "to": "n22",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e22",
+      "from": "n2",
+      "to": "n23",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e24",
+      "from": "n2",
+      "to": "n10",
+      "label": "",
+      "quickAdd": true
+    },
+    {
+      "id": "e25",
+      "from": "n23",
+      "to": "n28",
+      "label": "",
+      "quickAdd": true
+    }
+  ],
+  "idMap": {
+    "giving meaning to programs": "n0",
+    "foundations of pure mathematics b": "n1",
+    "mathematical foundations & analysis": "n2",
+    "implementing system-on-chip designs": "n3",
+    "processor microarchitecture": "n4",
+    "the internet of things: architectures and applications": "n5",
+    "distributed systems": "n6",
+    "ai and games": "n7",
+    "computational game theory": "n8",
+    "mathematical topics in machine learning": "n9",
+    "machine learning": "n10",
+    "natural language processing": "n11",
+    "natural language understanding": "n12",
+    "chip multiprocessors": "n13",
+    "system architecture": "n14",
+    "algorithms and complexity": "n15",
+    "foundations of pure mathematics a": "n16",
+    "graphics & virtual environments": "n17",
+    "introduction to visual computing": "n18",
+    "computer vision": "n19",
+    "advanced distributed systems": "n20",
+    "database systems": "n21",
+    "logic and modelling": "n22",
+    "introduction to ai": "n23",
+    "microcontrollers": "n25",
+    "exploring enterprise": "n26",
+    "entrepreneurial skills": "n27",
+    "knowledge based ai": "n28"
+  },
+  "idCounter": 29,
+  "edgeCounter": 26,
+  "quickAddDirection": "unlock"
+}
