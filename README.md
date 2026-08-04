@@ -4,7 +4,7 @@ _by Shreyas Tayal_
 
 An interactive, browser-based tool for mapping out university course prerequisites — built to plan which optional courses to take now based on what they unlock later.
 
-🔗 **Live tool:** `https://shreyas-tayal.github.io/Course_Flowchart_Builder/`
+🔗 **Live tool:** [Try it here](https://shreyas-tayal.github.io/Course_Flowchart_Builder/)
 
 ## What it does
 
